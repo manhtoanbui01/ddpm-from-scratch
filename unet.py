@@ -9,7 +9,7 @@ class ResidualBlock(nn.Module):
         The ResBlock uses pre-activation (GroupNorm → SiLU → Conv), the main benefit is that it keeps the residual skip path a clean identity: the block computes output = x + conv(SiLU(norm(x))), with nothing applied after the addition. This gives an unobstructed gradient highway through the skip connection (better gradient flow in deep nets) 
         Pre-activation also keeps the Conv layer's input stable, since it is normalized (and activated) before the Conv.
         This advantage exists because of the residual connection—without a skip path, the ordering matters far less.
-      2. Injects the timestep information so the block knows the noise level.
+      2. Injects the timestep information so the block knows the noise level (adds the same bias to every pixel (The noise level is also the same everywhere in the image, but different bias per channel))
     A residual (skip) connection adds the input back to the output, which helps
     gradients flow and lets the block learn only the *change* it needs to make.
     """
@@ -187,3 +187,4 @@ class UNet(nn.Module):
         x = self.bottle_neck(x, t_embed)
         x = self.decoder(x, t_embed, res1, res2, res3)
         return x
+
