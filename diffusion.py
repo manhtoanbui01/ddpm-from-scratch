@@ -54,8 +54,13 @@ class DDPM(nn.Module):
         else: 
             return mean + betas_t.sqrt() * noise  # sampling step, \sigma_t = sqrt(beta_t)
     
-        
-    
+    @torch.no_grad()
+    def sample(self, num_images: int, img_size=32, channels=3, device="cuda"):
+        x = torch.randn(num_images, channels, img_size, img_size, device=device)
+        for i in reversed(range(self.timesteps)):
+            t = torch.full((num_images,), i, dtype=torch.long, device=device)
+            x = self.p_sample(x, t)
+        return x
     
     
 
